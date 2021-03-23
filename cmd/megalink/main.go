@@ -14,8 +14,11 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"runtime"
 	"strings"
 )
+
+var version = "0.1.0"
 
 func windowsBrokenPipeRecovery() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -64,8 +67,14 @@ func main() {
 	pflag.StringP(OptionServerAddr, "a", "127.0.0.1:30303", "server listen address")
 	pflag.String(OptionTLSCert, "", "TLS certificate file path")
 	pflag.String(OptionTLSKey, "", "TLS key file path")
-
+	printVer := pflag.BoolP("version", "v", false, "print version")
 	pflag.Parse()
+
+	if *printVer {
+		fmt.Printf("megalink %s (%s %s/%s)", version, runtime.Version(), runtime.GOOS, runtime.GOARCH)
+		os.Exit(0)
+	}
+
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix("MEGALINK")
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
